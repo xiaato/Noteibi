@@ -1,0 +1,642 @@
+index.html
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LGN Liquid OS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+
+--bg:#050816;
+
+--glass:rgba(255,255,255,.06);
+
+--text:#ffffff;
+
+--primary:#00d2ff;
+
+}
+
+*{
+
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Montserrat',sans-serif;
+transition:.35s;
+
+}
+
+body{
+
+background:
+radial-gradient(circle at top left,#162447 0%,transparent 35%),
+radial-gradient(circle at bottom right,#2b124c 0%,transparent 35%),
+#050816;
+
+color:var(--text);
+
+overflow-x:hidden;
+
+}
+
+body.light{
+
+background:#edf2f7;
+
+color:#111;
+
+}
+
+.container{
+
+width:100%;
+max-width:430px;
+
+margin:auto;
+
+padding:18px;
+padding-bottom:120px;
+
+}
+
+/* STATUS BAR */
+
+.status-bar{
+
+position:sticky;
+
+top:0;
+
+display:flex;
+
+justify-content:space-between;
+
+padding:15px;
+
+backdrop-filter:blur(20px);
+
+background:rgba(0,0,0,.2);
+
+z-index:999;
+
+}
+
+/* GLASS */
+
+.glass{
+
+background:var(--glass);
+
+backdrop-filter:blur(24px);
+
+border:1px solid rgba(255,255,255,.08);
+
+border-radius:28px;
+
+box-shadow:0 10px 40px rgba(0,0,0,.2);
+
+}
+
+/* PROFILE */
+
+.profile-card{
+
+overflow:hidden;
+
+margin-bottom:20px;
+
+}
+
+.profile-header{
+
+height:160px;
+
+background:
+linear-gradient(
+135deg,
+#182848,
+#4b6cb7
+);
+
+}
+
+.avatar-wrap{
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+margin-top:-55px;
+
+padding-bottom:20px;
+
+}
+
+.avatar{
+
+width:110px;
+
+height:110px;
+
+border-radius:50%;
+
+border:4px solid #050816;
+
+}
+
+.user-name{
+
+font-size:1.4rem;
+
+font-weight:700;
+
+margin-top:12px;
+
+}
+
+.user-bio{
+
+opacity:.7;
+
+margin-top:8px;
+
+}
+
+/* WIDGETS */
+
+.widgets{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:12px;
+
+margin-bottom:20px;
+
+}
+
+.widget{
+
+padding:20px;
+
+text-align:center;
+
+}
+
+.widget-title{
+
+font-size:.7rem;
+
+opacity:.5;
+
+}
+
+.widget-value{
+
+margin-top:8px;
+
+font-size:1.2rem;
+
+color:var(--primary);
+
+font-weight:700;
+
+}
+
+/* MUSIC */
+
+.music-bar{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+padding:18px;
+
+margin-bottom:20px;
+
+}
+
+.play-btn{
+
+width:55px;
+
+height:55px;
+
+border-radius:50%;
+
+background:var(--primary);
+
+color:#000;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:1.2rem;
+
+cursor:pointer;
+
+}
+
+/* INPUT */
+
+.input-box{
+
+padding:20px;
+
+margin-bottom:20px;
+
+}
+
+textarea{
+
+width:100%;
+
+min-height:120px;
+
+background:none;
+
+border:none;
+
+outline:none;
+
+resize:none;
+
+font-size:1rem;
+
+color:inherit;
+
+}
+
+.btn{
+
+border:none;
+
+background:var(--primary);
+
+padding:12px 20px;
+
+border-radius:16px;
+
+font-weight:700;
+
+cursor:pointer;
+
+}
+
+/* NOTES */
+
+.note{
+
+padding:18px;
+
+margin-bottom:15px;
+
+}
+
+/* DOCK */
+
+.dock-bar{
+
+position:fixed;
+
+bottom:18px;
+
+left:50%;
+
+transform:translateX(-50%);
+
+width:92%;
+
+max-width:420px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:12px 18px;
+
+background:rgba(255,255,255,.08);
+
+backdrop-filter:blur(30px);
+
+border-radius:30px;
+
+border:1px solid rgba(255,255,255,.1);
+
+z-index:9999;
+
+}
+
+.dock-item{
+
+width:55px;
+
+height:55px;
+
+border-radius:18px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:1.3rem;
+
+cursor:pointer;
+
+}
+
+.dock-item:hover{
+
+transform:translateY(-5px);
+
+background:rgba(255,255,255,.08);
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- STATUS BAR -->
+
+<div class="status-bar">
+
+<div id="liveTime">12:00</div>
+
+<div>
+📶 🔋
+</div>
+
+</div>
+
+<div class="container">
+
+<!-- PROFILE -->
+
+<div class="glass profile-card">
+
+<div class="profile-header"></div>
+
+<div class="avatar-wrap">
+
+<img
+src="https://via.placeholder.com/100"
+class="avatar"
+>
+
+<div class="user-name">
+Dima
+</div>
+
+<div class="user-bio">
+LGN Liquid OS
+</div>
+
+</div>
+
+</div>
+
+<!-- WIDGETS -->
+
+<div class="widgets">
+
+<div class="glass widget">
+
+<div class="widget-title">
+TIME
+</div>
+
+<div class="widget-value" id="clock">
+00:00
+</div>
+
+</div>
+
+<div class="glass widget">
+
+<div class="widget-title">
+MODE
+</div>
+
+<div class="widget-value" id="modeText">
+Night
+</div>
+
+</div>
+
+</div>
+
+<!-- MUSIC -->
+
+<div class="glass music-bar">
+
+<div
+class="play-btn"
+onclick="toggleMusic()"
+id="playBtn"
+>
+▶
+</div>
+
+<div>
+
+<div style="font-weight:700;">
+LGN Radio
+</div>
+
+<div style="opacity:.5;font-size:.8rem;">
+Chill Melodies
+</div>
+
+</div>
+
+</div>
+
+<!-- INPUT -->
+
+<div class="glass input-box">
+
+<textarea
+id="textIn"
+placeholder="Напиши что-нибудь..."
+></textarea>
+
+<div style="margin-top:15px;">
+
+<button
+class="btn"
+onclick="addNote()"
+>
+Сохранить
+</button>
+
+</div>
+
+</div>
+
+<!-- NOTES -->
+
+<div id="feed"></div>
+
+</div>
+
+<!-- DOCK BAR -->
+
+<div class="dock-bar">
+
+<div
+class="dock-item"
+onclick="window.scrollTo({top:0,behavior:'smooth'})"
+>
+🏠
+</div>
+
+<div
+class="dock-item"
+onclick="toggleMusic()"
+>
+🎵
+</div>
+
+<div
+class="dock-item"
+onclick="toggleTheme()"
+>
+🌙
+</div>
+
+<div
+class="dock-item"
+onclick="document.getElementById('textIn').focus()"
+>
+➕
+</div>
+
+</div>
+
+<script>
+
+/* TIME */
+
+function updateTime(){
+
+const d = new Date();
+
+const h =
+String(d.getHours()).padStart(2,'0');
+
+const m =
+String(d.getMinutes()).padStart(2,'0');
+
+document.getElementById('clock').innerText =
+`${h}:${m}`;
+
+document.getElementById('liveTime').innerText =
+`${h}:${m}`;
+
+}
+
+setInterval(updateTime,1000);
+
+updateTime();
+
+/* THEME */
+
+let dark = true;
+
+function toggleTheme(){
+
+dark = !dark;
+
+document.body.classList.toggle('light');
+
+document.getElementById('modeText').innerText =
+dark ? 'Night' : 'Day';
+
+}
+
+/* MUSIC */
+
+let player = new Audio(
+'https://stream.zeno.fm/0r0xa792kwzuv'
+);
+
+let playing = false;
+
+function toggleMusic(){
+
+if(!playing){
+
+player.play();
+
+document.getElementById('playBtn').innerText='⏸';
+
+}else{
+
+player.pause();
+
+document.getElementById('playBtn').innerText='▶';
+
+}
+
+playing = !playing;
+
+}
+
+/* NOTES */
+
+function addNote(){
+
+let val =
+document.getElementById('textIn').value;
+
+if(!val) return;
+
+document.getElementById('feed').innerHTML =
+
+`
+<div class="glass note">
+
+${val}
+
+</div>
+`
+
++
+
+document.getElementById('feed').innerHTML;
+
+document.getElementById('textIn').value='';
+
+}
+
+</script>
+
+</body>
+
+</html>
