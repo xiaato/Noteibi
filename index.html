@@ -5,314 +5,325 @@ index.html
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noteibi - Liquid OS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- Подключаем современные шрифты -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f0f0f;
-            --panel: rgba(255, 255, 255, 0.05);
+            --bg: #0a0a0c;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.08);
             --text: #e0e0e0;
             --accent: #ffffff;
-            --blur: blur(25px);
+            --blur: blur(30px);
             --transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         [data-theme="light"] {
-            --bg: #f5f5f7;
-            --panel: rgba(0, 0, 0, 0.03);
-            --text: #1d1d1f;
-            --accent: #007aff;
+            --bg: #eef0f5;
+            --glass: rgba(0, 0, 0, 0.04);
+            --glass-border: rgba(0, 0, 0, 0.05);
+            --text: #1a1a1c;
+            --accent: #000000;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { display: none; }
 
         body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
+            margin: 0; padding: 0; font-family: 'Inter', sans-serif;
+            background: var(--bg); color: var(--text);
             transition: var(--transition);
             overflow-x: hidden;
+            padding-bottom: 120px; /* Отступ для док-бара */
         }
 
-        /* --- PRELOADER (Анимация ручки) --- */
-        #loader {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.8s ease;
+        /* Анимация появления текста */
+        @keyframes textReveal {
+            from { opacity: 0; transform: translateY(10px); filter: blur(5px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
 
-        .loader-logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            position: relative;
-            margin-bottom: 20px;
+        /* --- ВЕРХНЯЯ ПАНЕЛЬ (Часы, Погода, Меню) --- */
+        .top-dashboard {
+            padding: 30px 20px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            animation: textReveal 1s ease forwards;
         }
 
-        .pen-animation {
-            width: 100px;
-            height: 2px;
-            background: var(--accent);
-            position: relative;
-            overflow: hidden;
+        .time-widget {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .clock { font-size: 3.5rem; font-weight: 700; line-height: 1; letter-spacing: -2px; }
+        .date-weather { font-size: 0.9rem; opacity: 0.7; margin-top: 8px; display: flex; gap: 10px;}
+
+        /* Кнопка 3 точки */
+        .menu-btn {
+            background: var(--glass); backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border); border-radius: 50%;
+            width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; cursor: pointer; transition: var(--transition);
+        }
+        .menu-btn:hover { background: rgba(255,255,255,0.1); transform: rotate(90deg); }
+
+        /* Скрытое меню (Настройки) */
+        .settings-modal {
+            position: fixed; top: 80px; right: 20px; width: 250px;
+            background: var(--glass); backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: 20px; transform: scale(0.9); opacity: 0; pointer-events: none;
+            transition: var(--transition); z-index: 100;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .settings-modal.active { transform: scale(1); opacity: 1; pointer-events: auto; }
+
+        .profile-mini { text-align: center; margin-bottom: 20px; }
+        .avatar { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--glass-border); cursor:pointer;}
+        
+        /* Виджет Цитат */
+        .quote-widget {
+            margin: 0 20px 20px; padding: 20px; border-radius: 20px;
+            background: var(--glass); backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border);
+            font-style: italic; font-size: 0.9rem; opacity: 0.8;
+            animation: textReveal 1.2s ease forwards;
         }
 
-        .pen-animation::after {
-            content: '';
-            position: absolute;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--accent);
-            animation: write 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        /* --- ГЛАВНАЯ ЗОНА --- */
+        .main-content { max-width: 600px; margin: 0 auto; padding: 0 20px; }
+
+        /* Поле ввода (Жидкое стекло) */
+        .input-glass {
+            width: 100%; background: var(--glass); backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: 25px; color: var(--text); font-size: 1rem;
+            resize: none; outline: none; transition: var(--transition);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .input-glass:focus { background: rgba(255,255,255,0.08); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+
+        canvas#draw-area {
+            width: 100%; height: 300px; background: var(--glass); backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border); border-radius: 24px; display: none; touch-action: none;
         }
 
-        @keyframes write {
-            0% { left: -100%; }
-            50% { left: 0; }
-            100% { left: 100%; }
-        }
-
-        /* --- ИНТЕРФЕЙС --- */
-        .header {
-            padding: 60px 20px 40px;
-            text-align: center;
-            opacity: 0;
-            animation: slideUp 1s forwards 0.8s;
-        }
-
-        .avatar-wrapper {
-            width: 90px;
-            height: 90px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            border: 1px solid var(--panel);
-            backdrop-filter: var(--blur);
-            overflow: hidden;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .avatar-wrapper:hover {
-            transform: scale(1.05) rotate(3deg);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        #avatar-img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Жидкие папки */
-        .folders-container {
-            display: flex;
-            gap: 12px;
-            padding: 0 20px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .folder-btn {
-            background: var(--panel);
-            backdrop-filter: var(--blur);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text);
-            padding: 12px 24px;
-            border-radius: 20px;
-            white-space: nowrap;
-            transition: var(--transition);
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .folder-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
-
-        /* Текстовое поле */
-        .input-section {
-            padding: 40px 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        #note-text {
-            width: 100%;
-            background: var(--panel);
-            backdrop-filter: var(--blur);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 24px;
-            padding: 20px;
-            color: var(--text);
-            font-size: 1rem;
-            resize: none;
-            transition: var(--transition);
-            outline: none;
-        }
-
-        #note-text:focus {
-            background: rgba(255,255,255,0.08);
-            transform: scale(1.01);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-
-        /* Заметки */
         .note-card {
-            background: var(--panel);
-            backdrop-filter: var(--blur);
-            padding: 24px;
-            border-radius: 24px;
-            margin-bottom: 16px;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: var(--transition);
-            animation: slideUp 0.6s ease forwards;
+            background: var(--glass); backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border); padding: 20px;
+            border-radius: 24px; margin-top: 15px;
+            animation: textReveal 0.6s ease forwards; transition: var(--transition);
+        }
+        .note-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.08); }
+        .note-media { max-width: 100%; border-radius: 12px; margin-top: 10px; }
+        .note-audio { width: 100%; margin-top: 10px; border-radius: 12px; }
+
+        /* --- ДОК БАР (DOCK) --- */
+        .dock-container {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--glass); backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border); border-radius: 30px;
+            padding: 10px 20px; display: flex; gap: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4); z-index: 1000;
         }
 
-        .note-card:hover {
-            transform: translateY(-3px);
-            background: rgba(255, 255, 255, 0.08);
+        .dock-icon {
+            width: 50px; height: 50px; border-radius: 18px;
+            background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; cursor: pointer; transition: var(--transition); border: 1px solid transparent;
         }
+        .dock-icon:hover {
+            transform: translateY(-10px) scale(1.1);
+            background: rgba(255,255,255,0.15);
+            border-color: var(--glass-border);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .dock-icon.active { background: var(--text); color: var(--bg); }
 
-        .note-time {
-            font-size: 0.75rem;
-            opacity: 0.4;
-            margin-top: 12px;
-            display: block;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .theme-switch {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            background: var(--panel);
-            backdrop-filter: var(--blur);
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 100;
-        }
     </style>
 </head>
 <body data-theme="dark">
 
-    <!-- Экран загрузки -->
-    <div id="loader">
-        <div class="loader-logo">Noteibi</div>
-        <div class="pen-animation"></div>
+    <!-- Скрытые инпуты для файлов -->
+    <input type="file" id="image-upload" hidden accept="image/*" onchange="handleFileUpload(event, 'image')">
+    <input type="file" id="audio-upload" hidden accept="audio/*" onchange="handleFileUpload(event, 'audio')">
+    <input type="file" id="avatar-upload" hidden accept="image/*" onchange="changeAvatar(event)">
+
+    <!-- Фоновый звук дождя -->
+    <audio id="rain-audio" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_82bfaf5bc4.mp3?filename=rain-and-thunder-16705.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="top-dashboard">
+        <div class="time-widget">
+            <div class="clock" id="clock">00:00</div>
+            <div class="date-weather">
+                <span id="date">...</span> • 
+                <span id="weather">☁️ Загрузка...</span>
+            </div>
+        </div>
+        <div class="menu-btn" onclick="toggleSettings()">⋮</div>
     </div>
 
-    <div class="theme-switch" onclick="toggleTheme()">🌓</div>
-
-    <header class="header">
-        <div class="avatar-wrapper" onclick="document.getElementById('file-input').click()">
-            <img id="avatar-img" src="https://via.placeholder.com/150" alt="Profile">
+    <div class="settings-modal" id="settings">
+        <div class="profile-mini">
+            <img id="avatar" class="avatar" src="https://via.placeholder.com/150" onclick="document.getElementById('avatar-upload').click()">
+            <h3 style="margin: 10px 0 5px;">Xiaato</h3>
+            <p style="font-size: 0.8rem; opacity: 0.6; margin: 0;">Liquid OS</p>
         </div>
-        <input type="file" id="file-input" hidden onchange="loadAvatar(event)">
-        <h1 class="loader-logo" style="font-size: 2rem; margin: 0;">Xiaato</h1>
-        <p style="opacity: 0.6; font-size: 0.9rem;">Liquid Note System</p>
-    </header>
+        <button onclick="toggleTheme()" style="width:100%; padding:10px; border-radius:12px; border:none; background:var(--text); color:var(--bg); cursor:pointer;">Сменить тему 🌓</button>
+    </div>
 
-    <main class="input-section">
-        <div class="folders-container" id="folder-list">
-            <button class="folder-btn" onclick="addFolder()">+ Новая папка</button>
-            <button class="folder-btn">Все</button>
-            <button class="folder-btn">Работа</button>
-            <button class="folder-btn">Music</button>
-        </div>
+    <div class="quote-widget" id="quote">Загрузка мысли...</div>
 
-        <div style="margin-top: 30px;">
-            <textarea id="note-text" rows="4" placeholder="Твои мысли..."></textarea>
-            <button onclick="addNote()" style="width:100%; margin-top:15px; padding:16px; border-radius:20px; border:none; background:var(--accent); color:var(--bg); font-weight:600; cursor:pointer; transition: 0.3s;">
-                Сохранить в облако
-            </button>
-        </div>
+    <div class="main-content">
+        <textarea id="text-input" class="input-glass" rows="4" placeholder="Начни печатать..." oninput="playTypingSound()"></textarea>
+        <canvas id="draw-area"></canvas>
+        
+        <button onclick="saveNote()" style="width:100%; margin: 15px 0; padding:15px; border-radius:20px; border:none; background:var(--glass); color:var(--text); backdrop-filter:var(--blur); cursor:pointer; font-weight: 500; border: 1px solid var(--glass-border);">Сохранить мысль</button>
 
-        <div id="notes-display" style="margin-top: 40px;"></div>
-    </main>
+        <div id="notes-container"></div>
+    </div>
+
+    <!-- DOCK BAR -->
+    <div class="dock-container">
+        <div class="dock-icon active" onclick="setMode('text', this)">📝</div>
+        <div class="dock-icon" onclick="document.getElementById('image-upload').click()">🖼️</div>
+        <div class="dock-icon" onclick="document.getElementById('audio-upload').click()">🎵</div>
+        <div class="dock-icon" onclick="setMode('draw', this)">🎨</div>
+        <div class="dock-icon" id="rain-btn" onclick="toggleRain()">🎧</div>
+    </div>
 
     <script>
-        // Убираем лоадер
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => document.getElementById('loader').style.display = 'none', 800);
-            }, 2000);
-        });
+        // --- 1. ЧАСЫ И ПОГОДА ---
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('date').innerText = now.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' });
+        }
+        setInterval(updateClock, 1000); updateClock();
 
-        // Смена темы
-        function toggleTheme() {
-            const body = document.body;
-            body.dataset.theme = body.dataset.theme === 'dark' ? 'light' : 'dark';
+        // Погода (Москва)
+        async function fetchWeather() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=55.75&longitude=37.61&current_weather=true');
+                const data = await res.json();
+                document.getElementById('weather').innerText = `Москва: ${data.current_weather.temperature}°C`;
+            } catch { document.getElementById('weather').innerText = `Нет сети`; }
+        }
+        fetchWeather();
+
+        // --- 2. ЗВУКИ (Печать и Дождь) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTypingSound() {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.01, audioCtx.currentTime); // Очень тихий и мягкий звук
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.05);
         }
 
-        // Работа с аватаркой
-        function loadAvatar(event) {
+        let rainPlaying = false;
+        function toggleRain() {
+            const rain = document.getElementById('rain-audio');
+            const btn = document.getElementById('rain-btn');
+            if(rainPlaying) { rain.pause(); btn.style.background = ''; }
+            else { rain.play(); btn.style.background = 'rgba(255,255,255,0.2)'; }
+            rainPlaying = !rainPlaying;
+        }
+
+        // --- 3. ЦИТАТЫ И ФАКТЫ ---
+        const thoughts = [
+            "Дисциплина — это мост между целями и достижениями.",
+            "Даже путь в тысячу ли начинается с первого шага.",
+            "Факт: Мозг вырабатывает электричество, достаточное для питания лампочки.",
+            "Секрет успеха — в постоянстве цели.",
+            "Факт: Вода может кипеть и замерзать одновременно (тройная точка)."
+        ];
+        document.getElementById('quote').innerText = thoughts[Math.floor(Math.random() * thoughts.length)];
+
+        // --- 4. МЕНЮ И ТЕМА ---
+        function toggleSettings() { document.getElementById('settings').classList.toggle('active'); }
+        function toggleTheme() { document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark'; }
+        function changeAvatar(e) {
             const reader = new FileReader();
-            reader.onload = () => {
-                document.getElementById('avatar-img').src = reader.result;
-                localStorage.setItem('savedAvatar', reader.result);
-            };
-            reader.readAsDataURL(event.target.files[0]);
+            reader.onload = () => { document.getElementById('avatar').src = reader.result; localStorage.setItem('os_avatar', reader.result); };
+            reader.readAsDataURL(e.target.files[0]);
         }
 
-        // Сохранение заметок
-        let notes = JSON.parse(localStorage.getItem('myNotes')) || [];
-
-        function addNote() {
-            const content = document.getElementById('note-text').value;
-            if(!content) return;
-
-            const noteObj = {
-                id: Date.now(),
-                text: content,
-                time: new Date().toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })
-            };
-
-            notes.unshift(noteObj);
-            localStorage.setItem('myNotes', JSON.stringify(notes));
-            document.getElementById('note-text').value = '';
-            render();
+        // --- 5. РЕЖИМЫ (Текст / Рисование) ---
+        let currentMode = 'text';
+        function setMode(mode, el) {
+            document.querySelectorAll('.dock-icon').forEach(i => i.classList.remove('active'));
+            if(el) el.classList.add('active');
+            currentMode = mode;
+            document.getElementById('text-input').style.display = mode === 'text' ? 'block' : 'none';
+            document.getElementById('draw-area').style.display = mode === 'draw' ? 'block' : 'none';
         }
 
-        function render() {
-            const display = document.getElementById('notes-display');
-            display.innerHTML = notes.map(n => `
-                <div class="note-card">
-                    <div>${n.text}</div>
-                    <span class="note-time">${n.time}</span>
-                </div>
-            `).join('');
+        // Холст
+        const canvas = document.getElementById('draw-area');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        canvas.width = window.innerWidth - 40; canvas.height = 300;
+        ctx.fillStyle = "white"; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.strokeStyle = "black"; ctx.lineWidth = 3; ctx.lineCap = "round";
+
+        const startDraw = (e) => { isDrawing = true; draw(e); };
+        const stopDraw = () => { isDrawing = false; ctx.beginPath(); };
+        const draw = (e) => {
+            if (!isDrawing) return;
+            e.preventDefault();
+            let x = (e.clientX || e.touches[0].clientX) - canvas.getBoundingClientRect().left;
+            let y = (e.clientY || e.touches[0].clientY) - canvas.getBoundingClientRect().left; // Простая корректировка
+            ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
+        };
+        canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDraw);
+        canvas.addEventListener('touchstart', startDraw); canvas.addEventListener('touchmove', draw); canvas.addEventListener('touchend', stopDraw);
+
+        // --- 6. ЗАГРУЗКА ФАЙЛОВ И СОХРАНЕНИЕ ---
+        let notes = JSON.parse(localStorage.getItem('os_notes')) || [];
+
+        window.onload = () => {
+            if(localStorage.getItem('os_avatar')) document.getElementById('avatar').src = localStorage.getItem('os_avatar');
+            renderNotes();
+        };
+
+        function handleFileUpload(event, type) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = () => { saveToMemory(type, reader.result); };
+            reader.readAsDataURL(file);
         }
 
-        function addFolder() {
-            const name = prompt("Название папки:");
-            if(name) {
-                const btn = document.createElement('button');
-                btn.className = 'folder-btn';
-                btn.innerText = name;
-                document.getElementById('folder-list').appendChild(btn);
+        function saveNote() {
+            if(currentMode === 'text') {
+                const txt = document.getElementById('text-input').value;
+                if(txt) { saveToMemory('text', txt); document.getElementById('text-input').value = ''; }
+            } else if (currentMode === 'draw') {
+                saveToMemory('image', canvas.toDataURL());
+                ctx.fillStyle = "white"; ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
         }
 
-        // Загрузка сохраненного
-        window.onload = () => {
-            const av = localStorage.getItem('savedAvatar');
-            if(av) document.getElementById('avatar-img').src = av;
-            render();
-        };
+        function saveToMemory(type, content) {
+            notes.unshift({ id: Date.now(), type: type, content: content, time: new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'}) });
+            localStorage.setItem('os_notes', JSON.stringify(notes));
+            renderNotes();
+            setMode('text', document.querySelector('.dock-icon')); // возврат к тексту
+        }
+
+        function renderNotes() {
+            const cont = document.getElementById('notes-container');
+            cont.innerHTML = notes.map(n => {
+                let media = '';
+                if(n.type === 'image') media = `<img src="${n.content}" class="note-media">`;
+                if(n.type === 'audio') media = `<audio controls class="note-audio"><source src="${n.content}"></audio>`;
+                if(n.type === 'text') media = `<div>${n.content}</div>`;
+                return `<div class="note-card">${media}<div style="font-size:0.7rem; opacity:0.5; margin-top:10px">${n.time}</div></div>`;
+            }).join('');
+        }
     </script>
 </body>
 </html>
