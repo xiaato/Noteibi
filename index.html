@@ -1,642 +1,318 @@
 index.html
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>LGN Liquid OS</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-<style>
-
-:root{
-
---bg:#050816;
-
---glass:rgba(255,255,255,.06);
-
---text:#ffffff;
-
---primary:#00d2ff;
-
-}
-
-*{
-
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Montserrat',sans-serif;
-transition:.35s;
-
-}
-
-body{
-
-background:
-radial-gradient(circle at top left,#162447 0%,transparent 35%),
-radial-gradient(circle at bottom right,#2b124c 0%,transparent 35%),
-#050816;
-
-color:var(--text);
-
-overflow-x:hidden;
-
-}
-
-body.light{
-
-background:#edf2f7;
-
-color:#111;
-
-}
-
-.container{
-
-width:100%;
-max-width:430px;
-
-margin:auto;
-
-padding:18px;
-padding-bottom:120px;
-
-}
-
-/* STATUS BAR */
-
-.status-bar{
-
-position:sticky;
-
-top:0;
-
-display:flex;
-
-justify-content:space-between;
-
-padding:15px;
-
-backdrop-filter:blur(20px);
-
-background:rgba(0,0,0,.2);
-
-z-index:999;
-
-}
-
-/* GLASS */
-
-.glass{
-
-background:var(--glass);
-
-backdrop-filter:blur(24px);
-
-border:1px solid rgba(255,255,255,.08);
-
-border-radius:28px;
-
-box-shadow:0 10px 40px rgba(0,0,0,.2);
-
-}
-
-/* PROFILE */
-
-.profile-card{
-
-overflow:hidden;
-
-margin-bottom:20px;
-
-}
-
-.profile-header{
-
-height:160px;
-
-background:
-linear-gradient(
-135deg,
-#182848,
-#4b6cb7
-);
-
-}
-
-.avatar-wrap{
-
-display:flex;
-
-flex-direction:column;
-
-align-items:center;
-
-margin-top:-55px;
-
-padding-bottom:20px;
-
-}
-
-.avatar{
-
-width:110px;
-
-height:110px;
-
-border-radius:50%;
-
-border:4px solid #050816;
-
-}
-
-.user-name{
-
-font-size:1.4rem;
-
-font-weight:700;
-
-margin-top:12px;
-
-}
-
-.user-bio{
-
-opacity:.7;
-
-margin-top:8px;
-
-}
-
-/* WIDGETS */
-
-.widgets{
-
-display:grid;
-
-grid-template-columns:1fr 1fr;
-
-gap:12px;
-
-margin-bottom:20px;
-
-}
-
-.widget{
-
-padding:20px;
-
-text-align:center;
-
-}
-
-.widget-title{
-
-font-size:.7rem;
-
-opacity:.5;
-
-}
-
-.widget-value{
-
-margin-top:8px;
-
-font-size:1.2rem;
-
-color:var(--primary);
-
-font-weight:700;
-
-}
-
-/* MUSIC */
-
-.music-bar{
-
-display:flex;
-
-align-items:center;
-
-gap:15px;
-
-padding:18px;
-
-margin-bottom:20px;
-
-}
-
-.play-btn{
-
-width:55px;
-
-height:55px;
-
-border-radius:50%;
-
-background:var(--primary);
-
-color:#000;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-font-size:1.2rem;
-
-cursor:pointer;
-
-}
-
-/* INPUT */
-
-.input-box{
-
-padding:20px;
-
-margin-bottom:20px;
-
-}
-
-textarea{
-
-width:100%;
-
-min-height:120px;
-
-background:none;
-
-border:none;
-
-outline:none;
-
-resize:none;
-
-font-size:1rem;
-
-color:inherit;
-
-}
-
-.btn{
-
-border:none;
-
-background:var(--primary);
-
-padding:12px 20px;
-
-border-radius:16px;
-
-font-weight:700;
-
-cursor:pointer;
-
-}
-
-/* NOTES */
-
-.note{
-
-padding:18px;
-
-margin-bottom:15px;
-
-}
-
-/* DOCK */
-
-.dock-bar{
-
-position:fixed;
-
-bottom:18px;
-
-left:50%;
-
-transform:translateX(-50%);
-
-width:92%;
-
-max-width:420px;
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:12px 18px;
-
-background:rgba(255,255,255,.08);
-
-backdrop-filter:blur(30px);
-
-border-radius:30px;
-
-border:1px solid rgba(255,255,255,.1);
-
-z-index:9999;
-
-}
-
-.dock-item{
-
-width:55px;
-
-height:55px;
-
-border-radius:18px;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-font-size:1.3rem;
-
-cursor:pointer;
-
-}
-
-.dock-item:hover{
-
-transform:translateY(-5px);
-
-background:rgba(255,255,255,.08);
-
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noteibi - Liquid OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --panel: rgba(255, 255, 255, 0.05);
+            --text: #e0e0e0;
+            --accent: #ffffff;
+            --blur: blur(25px);
+            --transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg: #f5f5f7;
+            --panel: rgba(0, 0, 0, 0.03);
+            --text: #1d1d1f;
+            --accent: #007aff;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        /* --- PRELOADER (Анимация ручки) --- */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+
+        .loader-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .pen-animation {
+            width: 100px;
+            height: 2px;
+            background: var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pen-animation::after {
+            content: '';
+            position: absolute;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent);
+            animation: write 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes write {
+            0% { left: -100%; }
+            50% { left: 0; }
+            100% { left: 100%; }
+        }
+
+        /* --- ИНТЕРФЕЙС --- */
+        .header {
+            padding: 60px 20px 40px;
+            text-align: center;
+            opacity: 0;
+            animation: slideUp 1s forwards 0.8s;
+        }
+
+        .avatar-wrapper {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            border: 1px solid var(--panel);
+            backdrop-filter: var(--blur);
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .avatar-wrapper:hover {
+            transform: scale(1.05) rotate(3deg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        #avatar-img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Жидкие папки */
+        .folders-container {
+            display: flex;
+            gap: 12px;
+            padding: 0 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .folder-btn {
+            background: var(--panel);
+            backdrop-filter: var(--blur);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text);
+            padding: 12px 24px;
+            border-radius: 20px;
+            white-space: nowrap;
+            transition: var(--transition);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .folder-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        /* Текстовое поле */
+        .input-section {
+            padding: 40px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #note-text {
+            width: 100%;
+            background: var(--panel);
+            backdrop-filter: var(--blur);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 24px;
+            padding: 20px;
+            color: var(--text);
+            font-size: 1rem;
+            resize: none;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        #note-text:focus {
+            background: rgba(255,255,255,0.08);
+            transform: scale(1.01);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        /* Заметки */
+        .note-card {
+            background: var(--panel);
+            backdrop-filter: var(--blur);
+            padding: 24px;
+            border-radius: 24px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: var(--transition);
+            animation: slideUp 0.6s ease forwards;
+        }
+
+        .note-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .note-time {
+            font-size: 0.75rem;
+            opacity: 0.4;
+            margin-top: 12px;
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .theme-switch {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: var(--panel);
+            backdrop-filter: var(--blur);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+        }
+    </style>
 </head>
-
-<body>
-
-<!-- STATUS BAR -->
-
-<div class="status-bar">
-
-<div id="liveTime">12:00</div>
-
-<div>
-📶 🔋
-</div>
-
-</div>
-
-<div class="container">
-
-<!-- PROFILE -->
-
-<div class="glass profile-card">
-
-<div class="profile-header"></div>
-
-<div class="avatar-wrap">
-
-<img
-src="https://via.placeholder.com/100"
-class="avatar"
->
-
-<div class="user-name">
-Dima
-</div>
-
-<div class="user-bio">
-LGN Liquid OS
-</div>
-
-</div>
-
-</div>
-
-<!-- WIDGETS -->
-
-<div class="widgets">
-
-<div class="glass widget">
-
-<div class="widget-title">
-TIME
-</div>
-
-<div class="widget-value" id="clock">
-00:00
-</div>
-
-</div>
-
-<div class="glass widget">
-
-<div class="widget-title">
-MODE
-</div>
-
-<div class="widget-value" id="modeText">
-Night
-</div>
-
-</div>
-
-</div>
-
-<!-- MUSIC -->
-
-<div class="glass music-bar">
-
-<div
-class="play-btn"
-onclick="toggleMusic()"
-id="playBtn"
->
-▶
-</div>
-
-<div>
-
-<div style="font-weight:700;">
-LGN Radio
-</div>
-
-<div style="opacity:.5;font-size:.8rem;">
-Chill Melodies
-</div>
-
-</div>
-
-</div>
-
-<!-- INPUT -->
-
-<div class="glass input-box">
-
-<textarea
-id="textIn"
-placeholder="Напиши что-нибудь..."
-></textarea>
-
-<div style="margin-top:15px;">
-
-<button
-class="btn"
-onclick="addNote()"
->
-Сохранить
-</button>
-
-</div>
-
-</div>
-
-<!-- NOTES -->
-
-<div id="feed"></div>
-
-</div>
-
-<!-- DOCK BAR -->
-
-<div class="dock-bar">
-
-<div
-class="dock-item"
-onclick="window.scrollTo({top:0,behavior:'smooth'})"
->
-🏠
-</div>
-
-<div
-class="dock-item"
-onclick="toggleMusic()"
->
-🎵
-</div>
-
-<div
-class="dock-item"
-onclick="toggleTheme()"
->
-🌙
-</div>
-
-<div
-class="dock-item"
-onclick="document.getElementById('textIn').focus()"
->
-➕
-</div>
-
-</div>
-
-<script>
-
-/* TIME */
-
-function updateTime(){
-
-const d = new Date();
-
-const h =
-String(d.getHours()).padStart(2,'0');
-
-const m =
-String(d.getMinutes()).padStart(2,'0');
-
-document.getElementById('clock').innerText =
-`${h}:${m}`;
-
-document.getElementById('liveTime').innerText =
-`${h}:${m}`;
-
-}
-
-setInterval(updateTime,1000);
-
-updateTime();
-
-/* THEME */
-
-let dark = true;
-
-function toggleTheme(){
-
-dark = !dark;
-
-document.body.classList.toggle('light');
-
-document.getElementById('modeText').innerText =
-dark ? 'Night' : 'Day';
-
-}
-
-/* MUSIC */
-
-let player = new Audio(
-'https://stream.zeno.fm/0r0xa792kwzuv'
-);
-
-let playing = false;
-
-function toggleMusic(){
-
-if(!playing){
-
-player.play();
-
-document.getElementById('playBtn').innerText='⏸';
-
-}else{
-
-player.pause();
-
-document.getElementById('playBtn').innerText='▶';
-
-}
-
-playing = !playing;
-
-}
-
-/* NOTES */
-
-function addNote(){
-
-let val =
-document.getElementById('textIn').value;
-
-if(!val) return;
-
-document.getElementById('feed').innerHTML =
-
-`
-<div class="glass note">
-
-${val}
-
-</div>
-`
-
-+
-
-document.getElementById('feed').innerHTML;
-
-document.getElementById('textIn').value='';
-
-}
-
-</script>
-
+<body data-theme="dark">
+
+    <!-- Экран загрузки -->
+    <div id="loader">
+        <div class="loader-logo">Noteibi</div>
+        <div class="pen-animation"></div>
+    </div>
+
+    <div class="theme-switch" onclick="toggleTheme()">🌓</div>
+
+    <header class="header">
+        <div class="avatar-wrapper" onclick="document.getElementById('file-input').click()">
+            <img id="avatar-img" src="https://via.placeholder.com/150" alt="Profile">
+        </div>
+        <input type="file" id="file-input" hidden onchange="loadAvatar(event)">
+        <h1 class="loader-logo" style="font-size: 2rem; margin: 0;">Xiaato</h1>
+        <p style="opacity: 0.6; font-size: 0.9rem;">Liquid Note System</p>
+    </header>
+
+    <main class="input-section">
+        <div class="folders-container" id="folder-list">
+            <button class="folder-btn" onclick="addFolder()">+ Новая папка</button>
+            <button class="folder-btn">Все</button>
+            <button class="folder-btn">Работа</button>
+            <button class="folder-btn">Music</button>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <textarea id="note-text" rows="4" placeholder="Твои мысли..."></textarea>
+            <button onclick="addNote()" style="width:100%; margin-top:15px; padding:16px; border-radius:20px; border:none; background:var(--accent); color:var(--bg); font-weight:600; cursor:pointer; transition: 0.3s;">
+                Сохранить в облако
+            </button>
+        </div>
+
+        <div id="notes-display" style="margin-top: 40px;"></div>
+    </main>
+
+    <script>
+        // Убираем лоадер
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 800);
+            }, 2000);
+        });
+
+        // Смена темы
+        function toggleTheme() {
+            const body = document.body;
+            body.dataset.theme = body.dataset.theme === 'dark' ? 'light' : 'dark';
+        }
+
+        // Работа с аватаркой
+        function loadAvatar(event) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                document.getElementById('avatar-img').src = reader.result;
+                localStorage.setItem('savedAvatar', reader.result);
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        // Сохранение заметок
+        let notes = JSON.parse(localStorage.getItem('myNotes')) || [];
+
+        function addNote() {
+            const content = document.getElementById('note-text').value;
+            if(!content) return;
+
+            const noteObj = {
+                id: Date.now(),
+                text: content,
+                time: new Date().toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' })
+            };
+
+            notes.unshift(noteObj);
+            localStorage.setItem('myNotes', JSON.stringify(notes));
+            document.getElementById('note-text').value = '';
+            render();
+        }
+
+        function render() {
+            const display = document.getElementById('notes-display');
+            display.innerHTML = notes.map(n => `
+                <div class="note-card">
+                    <div>${n.text}</div>
+                    <span class="note-time">${n.time}</span>
+                </div>
+            `).join('');
+        }
+
+        function addFolder() {
+            const name = prompt("Название папки:");
+            if(name) {
+                const btn = document.createElement('button');
+                btn.className = 'folder-btn';
+                btn.innerText = name;
+                document.getElementById('folder-list').appendChild(btn);
+            }
+        }
+
+        // Загрузка сохраненного
+        window.onload = () => {
+            const av = localStorage.getItem('savedAvatar');
+            if(av) document.getElementById('avatar-img').src = av;
+            render();
+        };
+    </script>
 </body>
-
 </html>
