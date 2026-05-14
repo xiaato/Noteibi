@@ -2,328 +2,310 @@ index.html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Noteibi - Liquid OS</title>
-    <!-- Подключаем современные шрифты -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #0a0a0c;
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text: #e0e0e0;
-            --accent: #ffffff;
-            --blur: blur(30px);
-            --transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Noteibi</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080810;
+  --surface:rgba(255,255,255,0.045);
+  --surface-hover:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.07);
+  --border-hover:rgba(255,255,255,0.13);
+  --text:rgba(220,218,235,0.93);
+  --text-dim:rgba(200,198,218,0.48);
+  --text-dimmer:rgba(200,198,218,0.27);
+  --accent:rgba(178,168,255,0.92);
+  --accent-glow:rgba(140,128,255,0.14);
+  --red:rgba(255,100,100,0.85);
+  --blur:blur(24px) saturate(160%);
+  --blur-heavy:blur(56px) saturate(200%);
+  --ease:cubic-bezier(0.22,1,0.36,1);
+  --spring:cubic-bezier(0.34,1.56,0.64,1);
+  --t:0.5s var(--ease);
+  --font-body:'DM Sans',sans-serif;
+  --font-display:'DM Serif Display',serif;
+  --font-note:'DM Sans',sans-serif;
+  --dock-h:78px;
+}
+[data-theme="light"]{
+  --bg:#f0eef8;
+  --surface:rgba(0,0,0,0.038);
+  --surface-hover:rgba(0,0,0,0.065);
+  --border:rgba(0,0,0,0.065);
+  --border-hover:rgba(0,0,0,0.12);
+  --text:rgba(28,26,40,0.93);
+  --text-dim:rgba(48,44,65,0.5);
+  --text-dimmer:rgba(48,44,65,0.28);
+  --accent:rgba(88,76,200,0.92);
+  --accent-glow:rgba(88,76,200,0.1);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+::-webkit-scrollbar{display:none}
+html{scroll-behavior:smooth;height:100%}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  min-height:100dvh;
+  overflow-x:hidden;
+  transition:background var(--t),color var(--t);
+}
 
-        [data-theme="light"] {
-            --bg: #eef0f5;
-            --glass: rgba(0, 0, 0, 0.04);
-            --glass-border: rgba(0, 0, 0, 0.05);
-            --text: #1a1a1c;
-            --accent: #000000;
-        }
+/* Orbs */
+.orb{position:fixed;pointer-events:none;border-radius:50%;filter:blur(90px);opacity:0.07;z-index:0;will-change:transform;}
+.orb-1{width:520px;height:520px;background:radial-gradient(circle,#8b7fff,transparent);top:-180px;left:-120px;animation:orbF 20s ease-in-out infinite;}
+.orb-2{width:420px;height:420px;background:radial-gradient(circle,#ff7fa0,transparent);top:45%;right:-130px;animation:orbF 25s ease-in-out infinite reverse 3s;}
+.orb-3{width:360px;height:360px;background:radial-gradient(circle,#7fdeff,transparent);bottom:80px;left:5%;animation:orbF 17s ease-in-out infinite 7s;}
+[data-theme="light"] .orb{opacity:0.05;}
+@keyframes orbF{0%,100%{transform:translate(0,0)}40%{transform:translate(28px,-18px)}70%{transform:translate(-16px,14px)}}
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        ::-webkit-scrollbar { display: none; }
+/* Pages */
+.page{
+  position:fixed;inset:0;display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;transform:translateY(18px);
+  transition:opacity 0.5s var(--ease),transform 0.5s var(--ease);
+  z-index:1;overflow-y:auto;overflow-x:hidden;
+  padding-bottom:calc(var(--dock-h) + 36px);
+  -webkit-overflow-scrolling:touch;
+}
+.page.active{opacity:1;pointer-events:auto;transform:translateY(0);}
 
-        body {
-            margin: 0; padding: 0; font-family: 'Inter', sans-serif;
-            background: var(--bg); color: var(--text);
-            transition: var(--transition);
-            overflow-x: hidden;
-            padding-bottom: 120px; /* Отступ для док-бара */
-        }
+/* Glass util */
+.g{
+  background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--border);border-radius:18px;
+  transition:background var(--t),border-color var(--t),transform 0.4s var(--spring),box-shadow var(--t);
+}
 
-        /* Анимация появления текста */
-        @keyframes textReveal {
-            from { opacity: 0; transform: translateY(10px); filter: blur(5px); }
-            to { opacity: 1; transform: translateY(0); filter: blur(0); }
-        }
+/* =========== HOME =========== */
+#ph{z-index:2;}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;padding:44px 22px 0;position:relative;z-index:5;}
+.clock-t{
+  font-family:'JetBrains Mono',monospace;font-weight:300;
+  font-size:2.6rem;letter-spacing:-1px;color:var(--text);opacity:0.3;
+  line-height:1;cursor:default;transition:opacity 0.4s ease;user-select:none;
+  animation:fadeUp 1s var(--ease) both;
+}
+.clock-t:hover{opacity:0.65;}
+.clock-d{font-size:0.7rem;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-dimmer);margin-top:5px;animation:fadeUp 1s var(--ease) 0.1s both;cursor:default;}
+.topbar-actions{display:flex;gap:9px;align-items:center;}
+.ibtn{
+  width:40px;height:40px;border-radius:13px;background:var(--surface);backdrop-filter:var(--blur);
+  border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:1rem;transition:all 0.35s var(--spring);position:relative;overflow:hidden;
+}
+.ibtn:hover{background:var(--surface-hover);transform:scale(1.08);}
+.ibtn:active{transform:scale(0.93);}
 
-        /* --- ВЕРХНЯЯ ПАНЕЛЬ (Часы, Погода, Меню) --- */
-        .top-dashboard {
-            padding: 30px 20px;
-            display: flex; justify-content: space-between; align-items: flex-start;
-            animation: textReveal 1s ease forwards;
-        }
+.weather{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--surface);backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:50px;
+  padding:5px 12px;font-size:0.73rem;color:var(--text-dim);cursor:default;
+  transition:all 0.3s ease;margin:10px 22px 0;width:fit-content;animation:fadeUp 1s var(--ease) 0.2s both;
+}
+.weather:hover{background:var(--surface-hover);color:var(--text);}
 
-        .time-widget {
-            font-family: 'Space Grotesk', sans-serif;
-        }
-        .clock { font-size: 3.5rem; font-weight: 700; line-height: 1; letter-spacing: -2px; }
-        .date-weather { font-size: 0.9rem; opacity: 0.7; margin-top: 8px; display: flex; gap: 10px;}
+.quote{
+  margin:14px 22px 0;padding:13px 17px;border-radius:15px;
+  background:var(--surface);backdrop-filter:var(--blur);border:1px solid var(--border);
+  font-size:0.79rem;font-style:italic;font-family:'Cormorant Garamond',serif;color:var(--text-dim);
+  line-height:1.55;animation:fadeUp 1s var(--ease) 0.3s both;cursor:default;
+  transition:all 0.4s ease;
+}
+.quote:hover{color:var(--text);background:var(--surface-hover);}
 
-        /* Кнопка 3 точки */
-        .menu-btn {
-            background: var(--glass); backdrop-filter: var(--blur);
-            border: 1px solid var(--glass-border); border-radius: 50%;
-            width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; cursor: pointer; transition: var(--transition);
-        }
-        .menu-btn:hover { background: rgba(255,255,255,0.1); transform: rotate(90deg); }
+.section{padding:18px 22px 0;position:relative;z-index:2;}
+.sec-label{font-size:0.67rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dimmer);margin-bottom:13px;}
 
-        /* Скрытое меню (Настройки) */
-        .settings-modal {
-            position: fixed; top: 80px; right: 20px; width: 250px;
-            background: var(--glass); backdrop-filter: var(--blur);
-            border: 1px solid var(--glass-border); border-radius: 24px;
-            padding: 20px; transform: scale(0.9); opacity: 0; pointer-events: none;
-            transition: var(--transition); z-index: 100;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        .settings-modal.active { transform: scale(1); opacity: 1; pointer-events: auto; }
+.ngrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;transition:all 0.4s ease;}
+.ngrid.lv{grid-template-columns:1fr;}
 
-        .profile-mini { text-align: center; margin-bottom: 20px; }
-        .avatar { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--glass-border); cursor:pointer;}
-        
-        /* Виджет Цитат */
-        .quote-widget {
-            margin: 0 20px 20px; padding: 20px; border-radius: 20px;
-            background: var(--glass); backdrop-filter: var(--blur);
-            border: 1px solid var(--glass-border);
-            font-style: italic; font-size: 0.9rem; opacity: 0.8;
-            animation: textReveal 1.2s ease forwards;
-        }
+.ncard{
+  background:var(--surface);backdrop-filter:var(--blur);border:1px solid var(--border);
+  border-radius:17px;padding:15px;cursor:pointer;position:relative;overflow:hidden;
+  animation:noteIn 0.5s var(--spring) both;
+  transition:all 0.4s var(--spring);min-height:76px;
+}
+.ncard::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.025),transparent);pointer-events:none;border-radius:inherit;}
+.ncard:hover{transform:translateY(-4px) scale(1.015);background:var(--surface-hover);border-color:var(--border-hover);box-shadow:0 16px 44px rgba(0,0,0,0.22);}
+.ncard:active{transform:scale(0.97);}
+.ncard.todo-c{border-left:2px solid rgba(178,168,255,0.4);}
 
-        /* --- ГЛАВНАЯ ЗОНА --- */
-        .main-content { max-width: 600px; margin: 0 auto; padding: 0 20px; }
+.npreview{font-size:0.8rem;color:var(--text);font-family:var(--font-note);line-height:1.5;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;}
+.npreview img{max-width:100%;border-radius:9px;margin-top:5px;display:block;}
+.nmeta{display:flex;justify-content:space-between;align-items:center;margin-top:9px;font-size:0.63rem;color:var(--text-dimmer);}
+.ntag{background:var(--accent-glow);color:var(--accent);padding:2px 8px;border-radius:20px;font-size:0.59rem;flex-shrink:0;}
+.nacts{display:flex;gap:7px;opacity:0;transition:opacity 0.3s ease;}
+.ncard:hover .nacts{opacity:1;}
+.nact{width:26px;height:26px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.72rem;cursor:pointer;transition:all 0.25s ease;}
+.nact:hover{background:var(--surface-hover);transform:scale(1.1);}
 
-        /* Поле ввода (Жидкое стекло) */
-        .input-glass {
-            width: 100%; background: var(--glass); backdrop-filter: var(--blur);
-            border: 1px solid var(--glass-border); border-radius: 24px;
-            padding: 25px; color: var(--text); font-size: 1rem;
-            resize: none; outline: none; transition: var(--transition);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        .input-glass:focus { background: rgba(255,255,255,0.08); transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+.empty{grid-column:1/-1;text-align:center;padding:64px 20px;color:var(--text-dimmer);font-size:0.83rem;}
+.empty-ic{font-size:2.4rem;margin-bottom:11px;opacity:0.35;}
 
-        canvas#draw-area {
-            width: 100%; height: 300px; background: var(--glass); backdrop-filter: var(--blur);
-            border: 1px solid var(--glass-border); border-radius: 24px; display: none; touch-action: none;
-        }
+/* =========== EDITOR =========== */
+#pe{z-index:10;}
+.ehead{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:50px 18px 14px;position:sticky;top:0;z-index:10;
+  background:transparent;backdrop-filter:var(--blur-heavy);-webkit-backdrop-filter:var(--blur-heavy);
+}
+.backbtn{
+  display:flex;align-items:center;gap:7px;font-size:0.8rem;color:var(--text-dim);
+  cursor:pointer;padding:7px 11px;border-radius:12px;transition:all 0.3s ease;
+  border:1px solid transparent;background:none;
+}
+.backbtn:hover{color:var(--text);background:var(--surface);border-color:var(--border);}
+.backbtn .arr{font-size:1rem;transition:transform 0.3s ease;}
+.backbtn:hover .arr{transform:translateX(-3px);}
 
-        .note-card {
-            background: var(--glass); backdrop-filter: var(--blur);
-            border: 1px solid var(--glass-border); padding: 20px;
-            border-radius: 24px; margin-top: 15px;
-            animation: textReveal 0.6s ease forwards; transition: var(--transition);
-        }
-        .note-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.08); }
-        .note-media { max-width: 100%; border-radius: 12px; margin-top: 10px; }
-        .note-audio { width: 100%; margin-top: 10px; border-radius: 12px; }
+.fpick{display:flex;gap:5px;padding:0 18px 11px;overflow-x:auto;scrollbar-width:none;}
+.fbtn{
+  flex-shrink:0;padding:5px 13px;border-radius:20px;background:var(--surface);border:1px solid var(--border);
+  color:var(--text-dim);font-size:0.76rem;cursor:pointer;transition:all 0.3s ease;white-space:nowrap;
+}
+.fbtn:hover{background:var(--surface-hover);color:var(--text);}
+.fbtn.act{background:var(--accent-glow);border-color:var(--accent);color:var(--accent);}
 
-        /* --- ДОК БАР (DOCK) --- */
-        .dock-container {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: var(--glass); backdrop-filter: var(--blur);
-            border: 1px solid var(--glass-border); border-radius: 30px;
-            padding: 10px 20px; display: flex; gap: 15px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4); z-index: 1000;
-        }
+.ttabs{display:flex;gap:7px;padding:0 18px 14px;}
+.ttab{
+  flex:1;padding:9px;border-radius:13px;background:var(--surface);border:1px solid var(--border);
+  color:var(--text-dim);font-size:0.76rem;cursor:pointer;transition:all 0.3s ease;
+  text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.ttab.act{background:var(--accent-glow);border-color:var(--accent);color:var(--accent);}
 
-        .dock-icon {
-            width: 50px; height: 50px; border-radius: 18px;
-            background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;
-            font-size: 1.4rem; cursor: pointer; transition: var(--transition); border: 1px solid transparent;
-        }
-        .dock-icon:hover {
-            transform: translateY(-10px) scale(1.1);
-            background: rgba(255,255,255,0.15);
-            border-color: var(--glass-border);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        .dock-icon.active { background: var(--text); color: var(--bg); }
+.epane{padding:0 18px;display:none;}
+.epane.act{display:block;}
 
-    </style>
-</head>
-<body data-theme="dark">
+#nta{
+  width:100%;min-height:280px;background:var(--surface);backdrop-filter:var(--blur);
+  border:1px solid var(--border);border-radius:18px;padding:20px;color:var(--text);
+  font-size:0.97rem;line-height:1.72;resize:none;outline:none;font-family:var(--font-note);
+  transition:all 0.4s var(--ease);caret-color:var(--accent);
+}
+#nta::placeholder{color:var(--text-dimmer);}
+#nta:focus{background:var(--surface-hover);border-color:var(--border-hover);box-shadow:0 0 0 1px var(--border-hover),0 18px 46px rgba(0,0,0,0.18);}
 
-    <!-- Скрытые инпуты для файлов -->
-    <input type="file" id="image-upload" hidden accept="image/*" onchange="handleFileUpload(event, 'image')">
-    <input type="file" id="audio-upload" hidden accept="audio/*" onchange="handleFileUpload(event, 'audio')">
-    <input type="file" id="avatar-upload" hidden accept="image/*" onchange="changeAvatar(event)">
+/* Todo */
+.tlist{}
+.ti{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid var(--border);animation:fadeUp 0.3s var(--ease) both;}
+.tck{width:21px;height:21px;border-radius:8px;border:1.5px solid var(--border-hover);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.68rem;transition:all 0.3s var(--spring);margin-top:2px;background:transparent;}
+.tck.dn{background:var(--accent-glow);border-color:var(--accent);color:var(--accent);}
+.ttx{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-note);font-size:0.9rem;line-height:1.5;resize:none;width:100%;transition:opacity 0.3s ease;}
+.ttx.dn{opacity:0.38;text-decoration:line-through;}
+.tdel{opacity:0;cursor:pointer;color:var(--text-dimmer);font-size:0.83rem;transition:all 0.2s ease;padding:2px;flex-shrink:0;}
+.ti:hover .tdel{opacity:1;}
+.addtbtn{display:flex;align-items:center;gap:7px;padding:11px 0;color:var(--text-dimmer);font-size:0.83rem;cursor:pointer;transition:color 0.3s ease;}
+.addtbtn:hover{color:var(--accent);}
 
-    <!-- Фоновый звук дождя -->
-    <audio id="rain-audio" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_82bfaf5bc4.mp3?filename=rain-and-thunder-16705.mp3" type="audio/mpeg">
-    </audio>
+/* Canvas */
+.dtbar{display:flex;gap:7px;padding:0 0 11px;align-items:center;flex-wrap:wrap;}
+.dbtn{width:33px;height:33px;border-radius:10px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:0.83rem;cursor:pointer;transition:all 0.25s ease;}
+.dbtn:hover{background:var(--surface-hover);transform:scale(1.08);}
+.dbtn.act{background:var(--accent-glow);border-color:var(--accent);}
+.cdot{width:21px;height:21px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all 0.25s ease;flex-shrink:0;}
+.cdot.sel{border-color:var(--text);transform:scale(1.2);}
+#dc{width:100%;height:340px;border-radius:17px;border:1px solid var(--border);touch-action:none;background:transparent;display:block;}
+.szsl{-webkit-appearance:none;height:3px;border-radius:2px;background:var(--border);outline:none;flex:1;min-width:55px;}
+.szsl::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--text);cursor:pointer;transition:transform 0.2s ease;}
+.szsl::-webkit-slider-thumb:hover{transform:scale(1.3);}
+.clrc{position:absolute;top:10px;right:10px;padding:5px 11px;border-radius:9px;background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-size:0.73rem;cursor:pointer;transition:all 0.25s ease;}
+.clrc:hover{background:var(--surface-hover);color:var(--red);}
 
-    <div class="top-dashboard">
-        <div class="time-widget">
-            <div class="clock" id="clock">00:00</div>
-            <div class="date-weather">
-                <span id="date">...</span> • 
-                <span id="weather">☁️ Загрузка...</span>
-            </div>
-        </div>
-        <div class="menu-btn" onclick="toggleSettings()">⋮</div>
-    </div>
+/* Image pane */
+.idrop{border:2px dashed var(--border);border-radius:18px;padding:44px 18px;text-align:center;color:var(--text-dim);cursor:pointer;transition:all 0.3s ease;background:var(--surface);}
+.idrop:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow);}
+#imgprev{max-width:100%;border-radius:13px;display:none;margin-top:11px;}
+#audprev{width:100%;margin-top:11px;display:none;border-radius:12px;}
 
-    <div class="settings-modal" id="settings">
-        <div class="profile-mini">
-            <img id="avatar" class="avatar" src="https://via.placeholder.com/150" onclick="document.getElementById('avatar-upload').click()">
-            <h3 style="margin: 10px 0 5px;">Xiaato</h3>
-            <p style="font-size: 0.8rem; opacity: 0.6; margin: 0;">Liquid OS</p>
-        </div>
-        <button onclick="toggleTheme()" style="width:100%; padding:10px; border-radius:12px; border:none; background:var(--text); color:var(--bg); cursor:pointer;">Сменить тему 🌓</button>
-    </div>
+.savebtn{margin:18px;padding:15px;border-radius:17px;background:var(--text);color:var(--bg);border:none;cursor:pointer;font-family:var(--font-body);font-size:0.88rem;font-weight:500;letter-spacing:0.02em;transition:all 0.4s var(--spring);display:flex;align-items:center;justify-content:center;gap:7px;width:calc(100% - 36px);}
+.savebtn:hover{transform:scale(1.02);box-shadow:0 10px 30px rgba(0,0,0,0.24);}
+.savebtn:active{transform:scale(0.97);}
 
-    <div class="quote-widget" id="quote">Загрузка мысли...</div>
+/* =========== LOCK =========== */
+#plk{justify-content:center;align-items:center;text-align:center;z-index:20;padding:20px;}
+.lkico{font-size:2.8rem;margin-bottom:22px;animation:lkpulse 3s ease-in-out infinite;cursor:default;}
+@keyframes lkpulse{0%,100%{transform:scale(1);opacity:0.65;}50%{transform:scale(1.06);opacity:1;}}
+.pinrow{display:flex;gap:13px;justify-content:center;margin:19px 0;}
+.pindot{width:13px;height:13px;border-radius:50%;border:2px solid var(--border-hover);transition:all 0.3s var(--spring);}
+.pindot.f{background:var(--text);border-color:var(--text);transform:scale(1.1);}
+.pindot.err{background:var(--red);border-color:var(--red);animation:shk 0.4s ease;}
+@keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.npad{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;max-width:275px;margin:9px auto;}
+.nkey{height:62px;border-radius:17px;background:var(--surface);backdrop-filter:var(--blur);border:1px solid var(--border);font-size:1.35rem;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s var(--spring);font-family:'JetBrains Mono',monospace;font-weight:300;user-select:none;}
+.nkey:hover{background:var(--surface-hover);transform:scale(1.04);}
+.nkey:active{transform:scale(0.92);background:var(--accent-glow);}
+.nkey.del{font-size:0.98rem;color:var(--text-dim);}
+.nkey.emp{background:transparent;border-color:transparent;pointer-events:none;}
 
-    <div class="main-content">
-        <textarea id="text-input" class="input-glass" rows="4" placeholder="Начни печатать..." oninput="playTypingSound()"></textarea>
-        <canvas id="draw-area"></canvas>
-        
-        <button onclick="saveNote()" style="width:100%; margin: 15px 0; padding:15px; border-radius:20px; border:none; background:var(--glass); color:var(--text); backdrop-filter:var(--blur); cursor:pointer; font-weight: 500; border: 1px solid var(--glass-border);">Сохранить мысль</button>
+/* =========== PRIVATE =========== */
+#pp{z-index:19;}
 
-        <div id="notes-container"></div>
-    </div>
+/* =========== VIEW =========== */
+#pv{z-index:11;}
+.vtext{font-size:0.97rem;line-height:1.78;color:var(--text);font-family:var(--font-note);white-space:pre-wrap;word-break:break-word;padding:0 18px;}
+.vtodo{list-style:none;padding:0 18px;}
+.vtodo li{display:flex;align-items:flex-start;gap:11px;padding:9px 0;border-bottom:1px solid var(--border);font-size:0.88rem;color:var(--text);font-family:var(--font-note);}
+.vtodo li.dn{color:var(--text-dim);text-decoration:line-through;}
+.vtodo li::before{content:'○';color:var(--text-dimmer);flex-shrink:0;}
+.vtodo li.dn::before{content:'✓';color:var(--accent);}
+.vmeta{padding:0 18px;margin-top:18px;font-size:0.68rem;color:var(--text-dimmer);}
+.lnkbdg{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;background:var(--accent-glow);border:1px solid rgba(178,168,255,0.18);color:var(--accent);font-size:0.62rem;cursor:pointer;transition:all 0.25s ease;margin-top:8px;}
+.lnkbdg:hover{background:rgba(178,168,255,0.2);}
 
-    <!-- DOCK BAR -->
-    <div class="dock-container">
-        <div class="dock-icon active" onclick="setMode('text', this)">📝</div>
-        <div class="dock-icon" onclick="document.getElementById('image-upload').click()">🖼️</div>
-        <div class="dock-icon" onclick="document.getElementById('audio-upload').click()">🎵</div>
-        <div class="dock-icon" onclick="setMode('draw', this)">🎨</div>
-        <div class="dock-icon" id="rain-btn" onclick="toggleRain()">🎧</div>
-    </div>
+/* =========== SETTINGS PANEL =========== */
+.sp{position:fixed;top:0;right:0;bottom:0;width:275px;background:var(--bg);border-left:1px solid var(--border);z-index:50;transform:translateX(100%);transition:transform 0.5s var(--ease);display:flex;flex-direction:column;overflow-y:auto;padding:52px 18px 28px;}
+.sp.open{transform:translateX(0);}
+.sov{position:fixed;inset:0;background:rgba(0,0,0,0.35);backdrop-filter:blur(4px);z-index:49;opacity:0;pointer-events:none;transition:opacity 0.4s ease;}
+.sov.open{opacity:1;pointer-events:auto;}
+.sh{font-family:var(--font-display);font-size:1.35rem;margin-bottom:26px;color:var(--text);}
+.slbl{font-size:0.66rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-dimmer);margin-bottom:9px;}
+.avwrap{display:flex;align-items:center;gap:13px;padding:13px;border-radius:15px;background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:all 0.3s ease;margin-bottom:14px;}
+.avwrap:hover{background:var(--surface-hover);}
+.av{width:48px;height:48px;border-radius:13px;object-fit:cover;flex-shrink:0;}
+.avinf h3{font-size:0.88rem;font-weight:500;margin-bottom:2px;}
+.avinf p{font-size:0.7rem;color:var(--text-dim);}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-radius:13px;background:var(--surface);border:1px solid var(--border);margin-bottom:7px;cursor:pointer;transition:all 0.3s ease;}
+.srow:hover{background:var(--surface-hover);}
+.srlbl{font-size:0.83rem;}
+.stgl{width:34px;height:20px;border-radius:20px;background:var(--border-hover);position:relative;transition:background 0.3s ease;flex-shrink:0;}
+.stgl.on{background:var(--accent);}
+.stgl::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:white;top:3px;left:3px;transition:transform 0.3s var(--spring);box-shadow:0 1px 3px rgba(0,0,0,0.25);}
+.stgl.on::after{transform:translateX(14px);}
+.sbars{display:flex;align-items:flex-end;gap:3px;height:22px;cursor:pointer;margin-top:4px;}
+.sbar{width:3px;border-radius:2px;background:var(--accent);animation:bardnc 1.2s ease-in-out infinite;opacity:0.55;}
+.sbar:nth-child(1){height:7px;animation-delay:0s}
+.sbar:nth-child(2){height:15px;animation-delay:0.15s}
+.sbar:nth-child(3){height:22px;animation-delay:0.3s}
+.sbar:nth-child(4){height:11px;animation-delay:0.45s}
+.sbar:nth-child(5){height:18px;animation-delay:0.6s}
+.sbars.pau .sbar{animation-play-state:paused;opacity:0.2;}
+@keyframes bardnc{0%,100%{transform:scaleY(1)}50%{transform:scaleY(0.35)}}
 
-    <script>
-        // --- 1. ЧАСЫ И ПОГОДА ---
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('date').innerText = now.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' });
-        }
-        setInterval(updateClock, 1000); updateClock();
+/* =========== DOCK =========== */
+.dwrap{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:30;animation:fadeUp 0.8s var(--ease) 0.5s both;will-change:transform;}
+.dock{
+  display:flex;align-items:center;gap:5px;padding:9px 13px;
+  background:rgba(255,255,255,0.055);
+  backdrop-filter:var(--blur-heavy);-webkit-backdrop-filter:var(--blur-heavy);
+  border:1px solid rgba(255,255,255,0.09);border-radius:25px;
+  box-shadow:0 24px 60px rgba(0,0,0,0.38),0 0 0 0.5px rgba(255,255,255,0.035) inset,0 1px 0 rgba(255,255,255,0.07) inset;
+}
+[data-theme="light"] .dock{background:rgba(0,0,0,0.055);border-color:rgba(0,0,0,0.08);box-shadow:0 24px 60px rgba(0,0,0,0.12);}
+.di{width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;transition:all 0.35s var(--spring);position:relative;}
+.di:hover{transform:translateY(-10px) scale(1.16);}
+.di:active{transform:translateY(-3px) scale(1.06);}
+.di.act{background:rgba(255,255,255,0.09);box-shadow:0 0 0 1px rgba(255,255,255,0.07);}
+[data-theme="light"] .di.act{background:rgba(0,0,0,0.06);}
+.di .dot{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--text);opacity:0;transition:opacity 0.3s ease;}
+.di.act .dot{opacity:0.45;}
+.dsep{width:1px;height:26px;background:var(--border);margin:0 2px;}
+.dfab{width:46px;height:46px;border-radius:15px;background:var(--text);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:300;cursor:pointer;transition:all 0.35s var(--spring);box-shadow:0 4px 15px rgba(0,0,0,0.28);line-height:1;}
+.dfab:hover{transform:translateY(-10px) scale(1.16) rotate(45deg);}
+.dfab:active{transform:scale(0.94);}
 
-        // Погода (Москва)
-        async function fetchWeather() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=55.75&longitude=37.61&current_weather=true');
-                const data = await res.json();
-                document.getElementById('weather').innerText = `Москва: ${data.current_weather.temperature}°C`;
-            } catch { document.getElementById('weather').innerText = `Нет сети`; }
-        }
-        fetchWeather();
-
-        // --- 2. ЗВУКИ (Печать и Дождь) ---
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playTypingSound() {
-            if(audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.01, audioCtx.currentTime); // Очень тихий и мягкий звук
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.05);
-        }
-
-        let rainPlaying = false;
-        function toggleRain() {
-            const rain = document.getElementById('rain-audio');
-            const btn = document.getElementById('rain-btn');
-            if(rainPlaying) { rain.pause(); btn.style.background = ''; }
-            else { rain.play(); btn.style.background = 'rgba(255,255,255,0.2)'; }
-            rainPlaying = !rainPlaying;
-        }
-
-        // --- 3. ЦИТАТЫ И ФАКТЫ ---
-        const thoughts = [
-            "Дисциплина — это мост между целями и достижениями.",
-            "Даже путь в тысячу ли начинается с первого шага.",
-            "Факт: Мозг вырабатывает электричество, достаточное для питания лампочки.",
-            "Секрет успеха — в постоянстве цели.",
-            "Факт: Вода может кипеть и замерзать одновременно (тройная точка)."
-        ];
-        document.getElementById('quote').innerText = thoughts[Math.floor(Math.random() * thoughts.length)];
-
-        // --- 4. МЕНЮ И ТЕМА ---
-        function toggleSettings() { document.getElementById('settings').classList.toggle('active'); }
-        function toggleTheme() { document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark'; }
-        function changeAvatar(e) {
-            const reader = new FileReader();
-            reader.onload = () => { document.getElementById('avatar').src = reader.result; localStorage.setItem('os_avatar', reader.result); };
-            reader.readAsDataURL(e.target.files[0]);
-        }
-
-        // --- 5. РЕЖИМЫ (Текст / Рисование) ---
-        let currentMode = 'text';
-        function setMode(mode, el) {
-            document.querySelectorAll('.dock-icon').forEach(i => i.classList.remove('active'));
-            if(el) el.classList.add('active');
-            currentMode = mode;
-            document.getElementById('text-input').style.display = mode === 'text' ? 'block' : 'none';
-            document.getElementById('draw-area').style.display = mode === 'draw' ? 'block' : 'none';
-        }
-
-        // Холст
-        const canvas = document.getElementById('draw-area');
-        const ctx = canvas.getContext('2d');
-        let isDrawing = false;
-        canvas.width = window.innerWidth - 40; canvas.height = 300;
-        ctx.fillStyle = "white"; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.strokeStyle = "black"; ctx.lineWidth = 3; ctx.lineCap = "round";
-
-        const startDraw = (e) => { isDrawing = true; draw(e); };
-        const stopDraw = () => { isDrawing = false; ctx.beginPath(); };
-        const draw = (e) => {
-            if (!isDrawing) return;
-            e.preventDefault();
-            let x = (e.clientX || e.touches[0].clientX) - canvas.getBoundingClientRect().left;
-            let y = (e.clientY || e.touches[0].clientY) - canvas.getBoundingClientRect().left; // Простая корректировка
-            ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
-        };
-        canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDraw);
-        canvas.addEventListener('touchstart', startDraw); canvas.addEventListener('touchmove', draw); canvas.addEventListener('touchend', stopDraw);
-
-        // --- 6. ЗАГРУЗКА ФАЙЛОВ И СОХРАНЕНИЕ ---
-        let notes = JSON.parse(localStorage.getItem('os_notes')) || [];
-
-        window.onload = () => {
-            if(localStorage.getItem('os_avatar')) document.getElementById('avatar').src = localStorage.getItem('os_avatar');
-            renderNotes();
-        };
-
-        function handleFileUpload(event, type) {
-            const file = event.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = () => { saveToMemory(type, reader.result); };
-            reader.readAsDataURL(file);
-        }
-
-        function saveNote() {
-            if(currentMode === 'text') {
-                const txt = document.getElementById('text-input').value;
-                if(txt) { saveToMemory('text', txt); document.getElementById('text-input').value = ''; }
-            } else if (currentMode === 'draw') {
-                saveToMemory('image', canvas.toDataURL());
-                ctx.fillStyle = "white"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
-        }
-
-        function saveToMemory(type, content) {
-            notes.unshift({ id: Date.now(), type: type, content: content, time: new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'}) });
-            localStorage.setItem('os_notes', JSON.stringify(notes));
-            renderNotes();
-            setMode('text', document.querySelector('.dock-icon')); // возврат к тексту
-        }
-
-        function renderNotes() {
-            const cont = document.getElementById('notes-container');
-            cont.innerHTML = notes.map(n => {
-                let media = '';
-                if(n.type === 'image') media = `<img src="${n.content}" class="note-media">`;
-                if(n.type === 'audio') media = `<audio controls class="note-audio"><source src="${n.content}"></audio>`;
-                if(n.type === 'text') media = `<div>${n.content}</div>`;
-                return `<div class="note-card">${media}<div style="font-size:0.7rem; opacity:0.5; margin-top:10px">${n.time}</div></div>`;
-            }).join('');
-        }
-    </script>
-</body>
-</html>
+/* FAB popup */
+.fabpop{position:fixed;bottom:106px;left:50%;transform:tra
